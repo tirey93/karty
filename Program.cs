@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,68 +13,62 @@ namespace karty
         {
             _rng = new Random();
 
-            ElementalChance();
+            DoFullPicking();
             //MakeOnePick();
         }
 
-        //0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
-        //10, 13, 25, 7, 29, 15, 11, 12, 23, 21, 27, 9, 2, 6, 8, 3, 16, 26, 1, 18, 4, 19, 0, 28, 24, 14, 20, 17, 22, 5
         //0, 13, 15, 7, 29, 25, 11, 12, 23, 21, 27, 9, 2, 6, 8, 3, 16, 26, 1, 18, 4, 19, 10, 28, 24, 14, 20, 17, 22, 5
 
-        private static bool BadConditionIsMet(List<int> cardsInHand)
+        private static int[] CardsNotContainsAnyOf()
         {
-            return true;
-            //return card != 0;
-            //return cardsInHand.Any(x => new[] { 0, 1 }.Contains(x));
+            return new int[] {6, 7 };
         }
-        private static bool GoodConditionIsMet(List<int> cardsInHand)
+        private static int[] CardsContainsOneOf()
         {
-            //return true;
-            //return card != 0;
-            return cardsInHand.Any(x => new[] { 6 }.Contains(x));
+            return new[] { 0, 1 };
         }
 
         private static bool MulliganConditions(int card)
         {
             return new int[]{ 0, 1, 2, 3, 4, 5 }.Contains(card);
-            //return card % 15 == 0;
         }
 
 
 
-        public static void ElementalChance()
+        public static void DoFullPicking()
         {
             int result = 0;
-            int iterations = 1000;
+            int iterations = 100;
+            int all = 0;
 
-            for (int k = 0; k < iterations; k++)
+#if DEBUG
+                for (int i = 0; i < iterations; i++)
+#else
+                while(true)
+#endif
             {
+                all++;
                 if(MakeOnePick())
                     result++;
+#if !DEBUG
+                if (all % 10000 == 0)
+                    Console.Write($"\rResult: {(double)result / all:n3} / {all}");
+#endif
             }
 
-            Console.WriteLine("Result: " + result);
-
+            Console.WriteLine($"\n\nResult: {(double)result / all:n3} / {all}");
         }
 
         private static bool MakeOnePick()
         {
-            int numberDraws = 7;
+            int numberDraws = 9;
             int sizeOfDeck = 30;
             int cardsInMulligan = 3;
 
             var sortedCards = Extensions.FillArray(sizeOfDeck);
             var shuffleCards = _rng.Shuffle(sortedCards);
 
-            /*while (!(shuffleCards[2] == 15))
-            {
-                shuffleCards = _rng.Shuffle(sortedCards);
-            }*/
             List<int> cardsInHand = MakeMulligan(cardsInMulligan, ref shuffleCards);
-
-            /*Console.WriteLine(shuffleCards.ToStringPretty());
-            Console.WriteLine("After reshuffling:");
-            Console.WriteLine(shuffleCards.ToStringPretty());*/
 
             int i = 0;
             while (cardsInHand.Count < numberDraws)
@@ -84,16 +79,17 @@ namespace karty
                 i++;
             }
 
-            if (BadConditionIsMet(cardsInHand) && GoodConditionIsMet(cardsInHand))
+            ;
+            if (!cardsInHand.Any(x => CardsNotContainsAnyOf().Contains(x)) 
+                && cardsInHand.Any(x => CardsContainsOneOf().Contains(x)))
             {
-                Console.WriteLine(cardsInHand.ToArray().ToStringPretty());
+#if DEBUG
+                Console.WriteLine("## Hand: " + cardsInHand.ToArray().ToStringPretty());
+                Console.WriteLine();
+#endif
+                    
                 return true;
             }
-
-            /*Console.WriteLine("Cards in hands:");
-            Console.WriteLine(cardsInHand.ToArray().ToStringPretty());
-
-            Console.WriteLine("Bad condition:" + badCondition);*/
             return false;
         }
 
@@ -121,9 +117,14 @@ namespace karty
                 }
 
                 var secondShuffle = shuffleCards.Where(x => !cardsInHand.Contains(x)).ToArray();
-                /*Console.WriteLine($"Before reshuffling({secondShuffle.Length}):");
-                Console.WriteLine(secondShuffle.ToStringPretty());*/
                 shuffleCards = _rng.Shuffle(secondShuffle);
+
+#if DEBUG
+                Console.WriteLine("------------------------------------");
+                Console.WriteLine("Mulligan: " + toBeReshuffle.Keys.ToArray().ToStringPretty());
+                Console.WriteLine("Second: " + secondShuffle.ToStringPretty());
+                Console.WriteLine("Reshuffle: " + shuffleCards.ToStringPretty());
+#endif
             }
 
             return cardsInHand;

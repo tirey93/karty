@@ -29,11 +29,6 @@ namespace karty
             return new[] { 0, 1 };
         }
 
-        public static bool MulliganConditions(int card)
-        {
-            return new int[]{ 0, 1, 2, 3, 4, 5 }.Contains(card);
-        }
-
         //value true -> throw
         public static Dictionary<int, bool> ChooseMulligan(List<int> mulliganList)
         {

@@ -73,18 +73,12 @@ namespace karty
 
         private static List<int> MakeMulligan(int cardsInMulligan, ref int[] shuffleCards)
         {
-            var toBeReshuffle = new Dictionary<int, bool>();
+            var mulliganList = new List<int>();
             for (int i = 0; i < cardsInMulligan; i++)
             {
-                if (Program.MulliganConditions(shuffleCards[i]))
-                {
-                    toBeReshuffle.Add(shuffleCards[i], true);
-                }
-                else
-                {
-                    toBeReshuffle.Add(shuffleCards[i], false);
-                }
+                mulliganList.Add(shuffleCards[i]);
             }
+            var toBeReshuffle = Program.ChooseMulligan(mulliganList);
 
             var cardsInHand = new List<int>();
             if (toBeReshuffle.Where(x => x.Value).Count() > 0)

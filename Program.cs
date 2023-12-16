@@ -34,5 +34,18 @@ namespace karty
             return new int[]{ 0, 1, 2, 3, 4, 5 }.Contains(card);
         }
 
+        //value true -> throw
+        public static Dictionary<int, bool> ChooseMulligan(List<int> mulliganList)
+        {
+            var result = new Dictionary<int, bool>();
+            var toBeThrow = new int[] { 0, 1, 2, 3, 4, 5 };
+
+            foreach (var card in mulliganList)
+            {
+                result.Add(card, toBeThrow.Contains(card));
+            }
+            return result;
+        }
+
     }
 }

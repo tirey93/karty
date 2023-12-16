@@ -46,7 +46,25 @@ namespace karty
             var sortedCards = Extensions.FillArray(SizeOfDeck);
             var shuffleCards = _rng.Shuffle(sortedCards);
 
-            List<int> cardsInHand = MakeMulligan(CardsInMulligan, ref shuffleCards);
+            var toBeReshuffle = MakeMulligan(shuffleCards);
+
+            var cardsInHand = new List<int>();
+            if (toBeReshuffle.Where(x => x.Value).Count() > 0)
+            {
+                foreach (var card in toBeReshuffle.Where(x => !x.Value))
+                    cardsInHand.Add(card.Key);
+
+                var secondShuffle = shuffleCards.Where(x => !cardsInHand.Contains(x)).ToArray();
+                shuffleCards = _rng.Shuffle(secondShuffle);
+
+#if DEBUG
+                Console.WriteLine("------------------------------------");
+                Console.WriteLine("Mulligan: " + toBeReshuffle.Keys.ToArray().ToStringPretty());
+                Console.WriteLine("Second: " + secondShuffle.ToStringPretty());
+                Console.WriteLine("Reshuffle: " + shuffleCards.ToStringPretty());
+#endif
+            }
+
 
             int i = 0;
             while (cardsInHand.Count < NumberDraws)
@@ -71,35 +89,14 @@ namespace karty
             return false;
         }
 
-        private static List<int> MakeMulligan(int cardsInMulligan, ref int[] shuffleCards)
+        private static Dictionary<int, bool> MakeMulligan(int[] shuffleCards)
         {
             var mulliganList = new List<int>();
-            for (int i = 0; i < cardsInMulligan; i++)
+            for (int i = 0; i < CardsInMulligan; i++)
             {
                 mulliganList.Add(shuffleCards[i]);
             }
-            var toBeReshuffle = Program.ChooseMulligan(mulliganList);
-
-            var cardsInHand = new List<int>();
-            if (toBeReshuffle.Where(x => x.Value).Count() > 0)
-            {
-                foreach (var card in toBeReshuffle.Where(x => !x.Value))
-                {
-                    cardsInHand.Add(card.Key);
-                }
-
-                var secondShuffle = shuffleCards.Where(x => !cardsInHand.Contains(x)).ToArray();
-                shuffleCards = _rng.Shuffle(secondShuffle);
-
-#if DEBUG
-                Console.WriteLine("------------------------------------");
-                Console.WriteLine("Mulligan: " + toBeReshuffle.Keys.ToArray().ToStringPretty());
-                Console.WriteLine("Second: " + secondShuffle.ToStringPretty());
-                Console.WriteLine("Reshuffle: " + shuffleCards.ToStringPretty());
-#endif
-            }
-
-            return cardsInHand;
+            return Program.ChooseMulligan(mulliganList);
         }
     }
 }

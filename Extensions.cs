@@ -24,5 +24,17 @@ namespace karty
         {
             return string.Join(", ", array);
         }
+
+        public static int[] FillArray(int items)
+        {
+            var result = new int[items];
+            for (int i = 0; i < items; i++)
+            {
+                result[i] = i;
+            }
+            return result;
+        }
+
+        
     }
 }

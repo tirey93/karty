@@ -20,6 +20,27 @@ namespace karty
         //10, 13, 25, 7, 29, 15, 11, 12, 23, 21, 27, 9, 2, 6, 8, 3, 16, 26, 1, 18, 4, 19, 0, 28, 24, 14, 20, 17, 22, 5
         //0, 13, 15, 7, 29, 25, 11, 12, 23, 21, 27, 9, 2, 6, 8, 3, 16, 26, 1, 18, 4, 19, 10, 28, 24, 14, 20, 17, 22, 5
 
+        private static bool BadConditionIsMet(List<int> cardsInHand)
+        {
+            return true;
+            //return card != 0;
+            //return cardsInHand.Any(x => new[] { 0, 1 }.Contains(x));
+        }
+        private static bool GoodConditionIsMet(List<int> cardsInHand)
+        {
+            //return true;
+            //return card != 0;
+            return cardsInHand.Any(x => new[] { 6 }.Contains(x));
+        }
+
+        private static bool MulliganConditions(int card)
+        {
+            return new int[]{ 0, 1, 2, 3, 4, 5 }.Contains(card);
+            //return card % 15 == 0;
+        }
+
+
+
         public static void ElementalChance()
         {
             int result = 0;
@@ -37,11 +58,11 @@ namespace karty
 
         private static bool MakeOnePick()
         {
-            int numberDraws = 9;
+            int numberDraws = 7;
             int sizeOfDeck = 30;
             int cardsInMulligan = 3;
 
-            var sortedCards = FillArray(sizeOfDeck);
+            var sortedCards = Extensions.FillArray(sizeOfDeck);
             var shuffleCards = _rng.Shuffle(sortedCards);
 
             /*while (!(shuffleCards[2] == 15))
@@ -55,18 +76,15 @@ namespace karty
             Console.WriteLine(shuffleCards.ToStringPretty());*/
 
             int i = 0;
-            var badCondition = false;
             while (cardsInHand.Count < numberDraws)
             {
                 int drawedCard = shuffleCards[i];
 
-                if (BadConditionIsMet(drawedCard))
-                    badCondition = true;
                 cardsInHand.Add(drawedCard);
                 i++;
             }
 
-            if (badCondition)
+            if (BadConditionIsMet(cardsInHand) && GoodConditionIsMet(cardsInHand))
             {
                 Console.WriteLine(cardsInHand.ToArray().ToStringPretty());
                 return true;
@@ -84,7 +102,7 @@ namespace karty
             var toBeReshuffle = new Dictionary<int, bool>();
             for (int i = 0; i < cardsInMulligan; i++)
             {
-                if (BadConditionIsMet(shuffleCards[i]))
+                if (MulliganConditions(shuffleCards[i]))
                 {
                     toBeReshuffle.Add(shuffleCards[i], true);
                 }
@@ -109,21 +127,6 @@ namespace karty
             }
 
             return cardsInHand;
-        }
-
-        private static bool BadConditionIsMet(int card)
-        {
-            return card % 15 == 0;
-        }
-
-        public static int[] FillArray(int items)
-        {
-            var result = new int[items];
-            for (int i = 0; i < items; i++)
-            {
-                result[i] = i;
-            }
-            return result;
         }
     }
 }

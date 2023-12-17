@@ -75,7 +75,6 @@ namespace karty
                 i++;
             }
 
-            ;
             if (!cardsInHand.Any(x => Program.HandNotContainsAnyOf().Contains(x))
                 && cardsInHand.Any(x => Program.HandContainsOneOf().Contains(x)))
             {

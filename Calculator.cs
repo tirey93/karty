@@ -46,6 +46,7 @@ namespace karty
             var sortedCards = Extensions.FillArray(SizeOfDeck);
             var shuffleCards = _rng.Shuffle(sortedCards);
 #if DEBUG
+            Console.WriteLine("------------------------------------");
             Console.WriteLine("Shuffle: " + shuffleCards.ToStringPretty());
 #endif
             var toBeReshuffle = MakeMulligan(shuffleCards);
@@ -60,7 +61,6 @@ namespace karty
                 shuffleCards = _rng.Shuffle(secondShuffle);
 
 #if DEBUG
-                Console.WriteLine("------------------------------------");
                 Console.WriteLine("Mulligan: " + toBeReshuffle.Keys.ToArray().ToStringPretty());
                 Console.WriteLine("Second: " + secondShuffle.ToStringPretty());
                 Console.WriteLine("Reshuffle: " + shuffleCards.ToStringPretty());
@@ -76,16 +76,23 @@ namespace karty
                 cardsInHand.Add(drawedCard);
                 i++;
             }
+#if DEBUG
+            Console.WriteLine("## Hand: " + cardsInHand.ToArray().ToStringPretty());
+#endif
             if (!cardsInHand.Any(x => Program.HandNotContainsAnyOf().Contains(x))
                 && cardsInHand.Any(x => Program.HandContainsOneOf().Contains(x)))
             {
 #if DEBUG
-                Console.WriteLine("## Hand: " + cardsInHand.ToArray().ToStringPretty());
+                Console.WriteLine("!! Hitted !!");
+                Console.WriteLine("------------------------------------");
                 Console.WriteLine();
 #endif
-
                 return true;
             }
+#if DEBUG
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine();
+#endif
             return false;
         }
 

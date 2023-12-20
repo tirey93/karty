@@ -45,7 +45,9 @@ namespace karty
         {
             var sortedCards = Extensions.FillArray(SizeOfDeck);
             var shuffleCards = _rng.Shuffle(sortedCards);
-
+#if DEBUG
+            Console.WriteLine("Shuffle: " + shuffleCards.ToStringPretty());
+#endif
             var toBeReshuffle = MakeMulligan(shuffleCards);
 
             var cardsInHand = new List<int>();
@@ -74,7 +76,6 @@ namespace karty
                 cardsInHand.Add(drawedCard);
                 i++;
             }
-
             if (!cardsInHand.Any(x => Program.HandNotContainsAnyOf().Contains(x))
                 && cardsInHand.Any(x => Program.HandContainsOneOf().Contains(x)))
             {
